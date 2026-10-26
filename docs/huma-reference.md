@@ -12,7 +12,7 @@ This page lists 33 Huma-related keys recognized by this plugin, including shared
 | `deprecated` | Huma v2: marks the field as deprecated in the API schema. | Go boolean literal; `true`, `false` | Boolean literal syntax; metadata applies across field datatypes. |
 | `doc` | Huma v2: description included in the generated API schema. | Text; arbitrary values unless noted | Tag syntax and documentation/completion; metadata content is free-form. Runtime schema semantics are not evaluated. |
 | `enum` | Lists allowed schema values. Huma v2 uses comma-separated values; HCL libraries also use this key. | Text; arbitrary values unless noted | Shared Huma/HCL/TOML-style metadata; no typed default/enum content validation. |
-| `example` | Huma v2: example value shown in API documentation. | Text; arbitrary values unless noted | Tag syntax and documentation/completion; metadata content is free-form. Runtime schema semantics are not evaluated. |
+| `example` | Huma v2: example value shown in API documentation. Strings use plain text; string arrays also accept comma-separated text. Other known datatypes require JSON matching the scalar, array or object schema. Collection elements and map values are checked; custom schemas remain conservative. | Text; arbitrary values unless noted | Huma schema datatype: raw strings, JSON boolean/integral number/number/array/object; string-array CSV, collection elements and map values. Unknown/custom schemas remain conservative. See example guide. |
 | `exclusiveMaximum` | Huma v2: exclusive numeric upper bound. | Numeric literal | Numeric tag value and numeric field datatype; no exclusive-bound relationship check. |
 | `exclusiveMinimum` | Huma v2: exclusive numeric lower bound. | Numeric literal | Numeric tag value and numeric field datatype; no exclusive-bound relationship check. |
 | `form` | Binds Huma form-data input. Shared with Gin; default= and collection_format= in the vocabulary are Gin-style options. | Name followed by comma options; `default=`, `collection_format=` | Known options; Huma request pointer checks only in detected/explicit request context; Gin pointer fields remain allowed. Selected unsupported kinds checked. |
@@ -50,7 +50,8 @@ For `form`/`header`, Huma context comes from sibling query/path/cookie tags, a H
 - Numeric tags must parse numerically; `multipleOf` must be greater than zero. Length/count tags require a non-negative integer.
 - Numeric constraints need numeric fields; string constraints need string schemas; item constraints need array schemas; property counts need structs/maps. Byte slices/arrays follow Huma's base64 string-schema special case. Known custom schema/text/JSON encoders remain conservative.
 - Ordered pairs checked: minimum/maximum, minLength/maxLength, minItems/maxItems, minProperties/maxProperties. Exclusive bounds are individually checked but not compared with other bounds.
-- Metadata such as enum/default/const/format/doc/example remains free-form. The plugin does not compile regex patterns, check enum/default against arbitrary schemas, resolve dependentRequired field names or evaluate media types.
+- Example values are checked against known schema datatypes, including JSON arrays/objects, string-array CSV, collection elements and map values. See [example value checks](example-values.md).
+- Metadata such as enum/default/const/format/doc remains free-form. The plugin does not compile regex patterns, check enum/default against arbitrary schemas, resolve dependentRequired field names or evaluate media types.
 
 ## Example
 

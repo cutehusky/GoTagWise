@@ -111,7 +111,57 @@ public final class EditorSmokeStarter implements StartupActivity.DumbAware {
         runTypedDocumentationChecks(project);
         runReferenceChecks(project);
         runReferenceCompletionChecks(project);
+        runEnvDefaultChecks(project);
+        runExampleChecks(project);
         runGenericWrapperChecks(project);
+    }
+    private void runExampleChecks(Project project) {
+        typeCheck(project, "package smoke\ntype T struct { Count int `example:\"wrong\"` }", false, "valid JSON");
+        typeCheck(project, "package smoke\ntype T struct { Count int `example:\"1.5\"` }", false, "integral JSON number");
+        typeCheck(project, "package smoke\ntype Count int; type T struct { Count Count `example:\"1e2\"` }", false, null);
+        typeCheck(project, "package smoke\ntype T struct { Count *int `example:\"12\"` }", false, null);
+        typeCheck(project, "package smoke\ntype T struct { Enabled bool `example:\"TRUE\"` }", false, "valid JSON");
+        typeCheck(project, "package smoke\ntype T struct { Enabled bool `example:\"true\"` }", false, null);
+        typeCheck(project, "package smoke\ntype T struct { Name string `example:\"not JSON {\"` }", false, null);
+        typeCheck(project, "package smoke\ntype T struct { Values []int `example:\"[1,2]\"` }", false, null);
+        typeCheck(project, "package smoke\ntype T struct { Values []int `example:\"[1,true]\"` }", false, "[1]: expected an integral JSON number");
+        typeCheck(project, "package smoke\ntype T struct { Values []string `example:\"one,two\"` }", false, null);
+        typeCheck(project, "package smoke\ntype T struct { Values []string `example:\"[1]\"` }", false, "JSON string");
+        typeCheck(project, "package smoke\ntype T struct { Data []byte `example:\"SGVsbG8=\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Object struct { Name string }; type T struct { Object Object `example:\"[]\"` }", false, "JSON object");
+        typeCheck(project, "package smoke\ntype T struct { Values map[string]int `example:\"{\\\"a\\\":false}\"` }", false, "[a]: expected an integral JSON number");
+        typeCheck(project, "package smoke\ntype Wrap[T any] struct { Value T }; type T struct { Count Wrap[int] `example:\"false\"` }", false, "integral JSON number");
+        typeCheck(project, "package smoke\nimport \"time\"\ntype T struct { Created time.Time `example:\"2026-10-26T12:00:00Z\"` }", false, null);
+        typeCheck(project, "package smoke\nimport \"time\"\ntype T struct { Delay time.Duration `example:\"5s\"` }", false, "valid JSON");
+        typeCheck(project, "package smoke\ntype Custom int; func (*Custom) UnmarshalText([]byte) error { return nil }; type T struct { Count Custom `example:\"custom\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Custom int; func (Custom) Schema() {}; type T struct { Count Custom `example:\"custom\"` }", false, null);
+        check(complete(project, "Count int `exam<caret>`").contains("example"), "Numeric fields offer example tag despite generic catalog sample");
+        check(!complete(project, "Callback func() `exam<caret>`").contains("example"), "Unsupported fields hide example tag completion");
+        PsiFile documented = file(project, "Count int `example:\"wrong\"`");
+        var targets = new StructTagDocumentationProvider().documentationTargets(documented, documented.getText().indexOf("example") + 1);
+        check(targets.size() == 1 && targets.get(0).computeDocumentationHint().contains("example:&quot;1&quot;"), "Example docs remain available with datatype-aware sample");
+    }
+    private void runEnvDefaultChecks(Project project) {
+        typeCheck(project, "package smoke\ntype Config struct { Port int `env:\"PORT\" envDefault:\"abc\"` }", false, "decimal integer");
+        typeCheck(project, "package smoke\ntype Config struct { Port *int `env:\"PORT\" envDefault:\"8080\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Port uint8; type Config struct { Port Port `envDefault:\"256\"` }", false, "outside");
+        typeCheck(project, "package smoke\ntype Wrap[T any] struct { Value T }; type Config struct { Port Wrap[int] `envDefault:\"abc\"` }", false, "decimal integer");
+        typeCheck(project, "package smoke\ntype Config struct { Enabled bool `envDefault:\"yes\"` }", false, "Go boolean");
+        typeCheck(project, "package smoke\ntype Config struct { Enabled bool `envDefault:\"TRUE\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Config struct { Ports []int `envSeparator:\"|\" envDefault:\"80|bad\"` }", false, "slice element 2");
+        typeCheck(project, "package smoke\ntype Config struct { Ports map[string]int `envKeyValSeparator:\"=\" envDefault:\"http=80,https=443\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Config struct { Ports map[int]string `envDefault:\"bad:http\"` }", false, "map key 1");
+        typeCheck(project, "package smoke\nimport clock \"time\"\ntype Config struct { Timeout clock.Duration `envDefault:\"5s\"` }", false, null);
+        typeCheck(project, "package smoke\nimport \"time\"\ntype Config struct { Timeout time.Duration `envDefault:\"five seconds\"` }", false, "Go duration");
+        typeCheck(project, "package smoke\nimport \"time\"\ntype Delay = time.Duration; type Config struct { Timeout Delay `envDefault:\"5s\"` }", false, null);
+        typeCheck(project, "package smoke\nimport \"time\"\ntype Delay time.Duration; type Config struct { Timeout Delay `envDefault:\"5\"` }", false, null);
+        typeCheck(project, "package smoke\nimport \"time\"\ntype Delay time.Duration; type Config struct { Timeout Delay `envDefault:\"5s\"` }", false, "decimal integer");
+        typeCheck(project, "package smoke\nimport \"time\"\ntype Wrap[T any] struct { Value T }; type Config struct { Timeout Wrap[time.Duration] `envDefault:\"5s\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Port int; func (*Port) UnmarshalText([]byte) error { return nil }; type Config struct { Port Port `envDefault:\"custom\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Config struct { Port int `env:\"PORT,file\" envDefault:\"/path/to/port\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Config struct { Port int `env:\"PORT,expand\" envDefault:\"${PORT}\"` }", false, null);
+        check(!complete(project, "N [2]int `envD<caret>`").contains("envDefault"), "Unsupported arrays hide envDefault completion");
+        check(complete(project, "N int `envD<caret>`").contains("envDefault"), "Supported numeric fields offer envDefault completion");
     }
     private void runReferenceCompletionChecks(Project project) {
         String fields = "Description *string `json:\"description,omitempty\"`; Count int; Wide int64; Enabled bool; ";

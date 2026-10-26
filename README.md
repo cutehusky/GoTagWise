@@ -73,6 +73,8 @@ See the [usage guide](docs/usage.md) for completion examples, templates, Huma po
 | [Implemented checks](docs/checks-reference.md) | Inspection coverage and runtime-only limits |
 | [Validator field references](docs/validator-references.md) | Comparison/conditional rules, nested paths, and examples |
 | [Generic wrappers](docs/generic-wrappers.md) | Automatic payload-type inference and qualification rules |
+| [Env defaults](docs/env-defaults.md) | Datatype checks for fallback values, collections, and durations |
+| [Example values](docs/example-values.md) | Datatype checks for Huma examples and JSON collections |
 | [Development](docs/development.md) | Build, tests, project layout, and documentation generation |
 
 The plugin performs static checks. Unknown/custom types remain conservative, and shared HCL/TOML/Redis keys use combined vocabularies. Runtime input, custom registries, pointer nilness, and collection entry existence still need application tests.

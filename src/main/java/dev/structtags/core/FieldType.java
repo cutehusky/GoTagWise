@@ -3,14 +3,16 @@ package dev.structtags.core;
 import java.util.Set;
 
 /** Conservative resolved Go type information. UNKNOWN is never treated as incompatible. */
-public record FieldType(Kind kind, String name, FieldType element, FieldType key, Set<String> methods, boolean genericValueWrapper) {
-    public FieldType(Kind kind, String name, FieldType element, FieldType key, Set<String> methods) { this(kind, name, element, key, methods, false); }
+public record FieldType(Kind kind, String name, FieldType element, FieldType key, Set<String> methods, boolean genericValueWrapper, String envParser) {
+    public FieldType(Kind kind, String name, FieldType element, FieldType key, Set<String> methods) { this(kind, name, element, key, methods, false, ""); }
+    public FieldType(Kind kind, String name, FieldType element, FieldType key, Set<String> methods, boolean genericValueWrapper) { this(kind, name, element, key, methods, genericValueWrapper, ""); }
     public enum Kind { UNKNOWN, POINTER, STRING, BOOLEAN, INTEGER, UNSIGNED, FLOAT, COMPLEX, STRUCT, MAP, SLICE, ARRAY, INTERFACE, FUNCTION, CHANNEL }
     public static final FieldType UNKNOWN = of(Kind.UNKNOWN, "unknown");
     public static FieldType of(Kind kind, String name) { return new FieldType(kind, name, null, null, Set.of()); }
     public static FieldType container(Kind kind, FieldType element, FieldType key) { return new FieldType(kind, kind.name().toLowerCase(), element, key, Set.of()); }
-    public FieldType withMethods(Set<String> names) { return new FieldType(kind, name, element, key, Set.copyOf(names), genericValueWrapper); }
-    public FieldType asGenericValueWrapper() { return new FieldType(kind, name, element, key, methods, true); }
+    public FieldType withMethods(Set<String> names) { return new FieldType(kind, name, element, key, Set.copyOf(names), genericValueWrapper, envParser); }
+    public FieldType asGenericValueWrapper() { return new FieldType(kind, name, element, key, methods, true, envParser); }
+    public FieldType withEnvParser(String parser) { return new FieldType(kind, name, element, key, methods, genericValueWrapper, parser); }
     public FieldType dereference() {
         FieldType result = this;
         for (int i = 0; i < 32 && result.kind == Kind.POINTER && result.element != null; i++) result = result.element;

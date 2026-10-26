@@ -17,6 +17,8 @@ public final class CoreTest {
         checks += TypeValidationTest.run();
         checks += CompletionTypeTest.run();
         checks += ValidatorReferenceTest.run();
+        checks += EnvDefaultTest.run();
+        checks += ExampleValidationTest.run();
         valid("`json:\"id,omitempty\" bson:\"_id,minsize\" yaml:\",inline\"`");
         valid("`json:\",omitzero\" jsonv2:\"anything\"`");
         valid("`dynamodbav:\",stringset,omitemptyelem\"`");

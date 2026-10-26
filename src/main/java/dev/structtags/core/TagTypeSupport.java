@@ -10,6 +10,10 @@ public final class TagTypeSupport {
     public static String keyProblem(String key, FieldType declared) {
         FieldType type = declared.dereference();
         if (type.unknown()) return null;
+        if (key.equals("example")) return ExampleValidator.keyProblem(declared);
+        if (key.equals("envDefault") && !declared.has("UnmarshalText") && !type.has("UnmarshalText")
+                && (Set.of(ARRAY, FUNCTION, CHANNEL, COMPLEX).contains(type.kind()) || type.name().equals("uintptr")))
+            return "envDefault has no built-in parser for this field datatype (" + type.name() + ")";
         if (SERIALIZATION.contains(key) && !custom(key, declared)) {
             if (Set.of(FUNCTION, CHANNEL, COMPLEX).contains(type.kind())) return key + " does not support this field datatype (" + type.name() + ")";
             if (key.equals("xml") && type.kind() == MAP) return "XML does not support map fields";
@@ -59,6 +63,7 @@ public final class TagTypeSupport {
     public static boolean supportsKey(String key, FieldType type, boolean humaInput) {
         TagCatalog.Spec spec = TagCatalog.get(key);
         if (spec == null) return true;
+        if (key.equals("envDefault") || key.equals("example")) return keyProblem(key, type) == null;
         // These keys establish Huma input context themselves while being completed.
         boolean huma = humaInput || Set.of("query", "path", "cookie").contains(key);
         return TagTypeValidator.validate(literal(key, spec.example()), type, huma).isEmpty();

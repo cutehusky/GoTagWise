@@ -38,8 +38,9 @@ public final class TagDocumentation {
             }
         } else {
             String exampleValue = spec.kind() == TagCatalog.Kind.NAME_OPTIONS
-                ? TagCatalog.name(field == null || field.isBlank() ? "Field" : field, key.equals("env") ? "upper" : key.equals("json") ? "camel" : "snake") : spec.example();
-            out.append("<p><b>Example</b></p><pre>").append(escape("`" + key + ":\"" + exampleValue + "\"`" )).append("</pre>");
+                ? TagCatalog.name(field == null || field.isBlank() ? "Field" : field, key.equals("env") ? "upper" : key.equals("json") ? "camel" : "snake")
+                : key.equals("envDefault") ? EnvDefaultValidator.example(type) : key.equals("example") ? ExampleValidator.example(type) : spec.example();
+            out.append("<p><b>Example</b></p><pre>").append(escape("`" + key + ":\"" + exampleValue.replace("\\", "\\\\").replace("\"", "\\\"") + "\"`" )).append("</pre>");
         }
         if (!words.isEmpty()) {
             out.append("<p><b>").append(switch (spec.kind()) {
@@ -129,7 +130,7 @@ public final class TagDocumentation {
             case "bson" -> "Sets the BSON element name and encoding options. Use inline to flatten an embedded struct or map, or - to skip a field.";
             case "dynamodbav" -> "Sets the DynamoDB attribute name and encoding options. Set encodings and Unix time require compatible Go field types.";
             case "env" -> "Sets the environment variable name to load. Options can require a value, expand it, read from a file, or unset the variable after parsing.";
-            case "envDefault" -> "Fallback value used by env when the environment variable is absent.";
+            case "envDefault" -> "Fallback value used by env when the environment variable is absent or empty. Checked using the field datatype: Go booleans, decimal integers and ranges, floats, time.Duration, slice elements and map keys/values. envSeparator and envKeyValSeparator control collection parsing. Empty defaults skip conversion. UnmarshalText, unknown types, file input and expanded variables are left to runtime.";
             case "envPrefix" -> "Prefix added to environment variable names for a nested configuration struct.";
             case "envSeparator" -> "Separator used when parsing environment values into slices.";
             case "envKeyValSeparator" -> "Separator between map keys and values when parsing environment values.";
@@ -157,7 +158,7 @@ public final class TagDocumentation {
             case "const" -> "Huma v2: requires a field to equal this constant value.";
             case "pattern" -> "Huma v2: regular expression constraint on a string.";
             case "patternDescription" -> "Huma v2: human-readable explanation of the pattern constraint.";
-            case "example" -> "Huma v2: example value shown in API documentation.";
+            case "example" -> "Huma v2: example value shown in API documentation. Strings use plain text; string arrays also accept comma-separated text. Other known datatypes require JSON matching the scalar, array or object schema. Collection elements and map values are checked; custom schemas remain conservative.";
             case "dependentRequired" -> "Huma v2: names of fields required when this field is present.";
             case "contentType" -> "Huma v2: overrides the request body's media type.";
             case "required" -> "Huma v2: explicitly marks a query, header or cookie parameter as required. These parameters are optional by default.";

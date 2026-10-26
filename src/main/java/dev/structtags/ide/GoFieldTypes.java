@@ -86,10 +86,13 @@ final class GoFieldTypes {
                 String canonical = canonical(text, original.getContainingFile());
                 if (canonical.equals("time.Time")) base = FieldType.of(STRUCT, canonical);
                 else if (base.kind() == STRUCT && !base.genericValueWrapper() && !base.name().equals("time.Time") && !definition.isTypeAlias() && definition.getName() != null) base = FieldType.of(STRUCT, definition.getName());
+                if (payload == null && !definition.isTypeAlias()) base = base.withEnvParser("");
+                if (Set.of("time.Duration", "net/url.URL", "time.Location").contains(canonical)) base = base.withEnvParser(canonical);
                 return base.withMethods(methods);
             }
             String canonical = canonical(text, original.getContainingFile());
-            if (Set.of("time.Time", "net/url.URL", "net/http.Cookie").contains(canonical)) return FieldType.of(STRUCT, canonical);
+            if (Set.of("time.Time", "net/url.URL", "net/http.Cookie", "time.Location").contains(canonical)) return FieldType.of(STRUCT, canonical).withEnvParser(canonical);
+            if (canonical.equals("time.Duration")) return FieldType.of(INTEGER, "int64").withEnvParser(canonical);
             if (canonical.equals("net.IP")) return new FieldType(SLICE, canonical, FieldType.of(UNSIGNED, "uint8"), null, Set.of("UnmarshalText", "MarshalText"));
             return switch (text) {
                 case "string" -> FieldType.of(STRING, text);

@@ -14,7 +14,8 @@ public final class TagTypeValidator {
         FieldType type = declared.dereference();
         boolean bytes = type.collection() && type.element() != null && type.element().name().equals("uint8");
         FieldType schemaType = bytes ? FieldType.of(STRING, "base64 string") : type;
-        for (var e : TagParser.parse(literal).entries()) {
+        var entries = TagParser.parse(literal).entries();
+        for (var e : entries) {
             if (e.value().equals("-") && Set.of("json", "xml", "bson", "yaml", "toml", "msgpack", "dynamodbav", "redis").contains(e.key())) continue;
             String keyProblem = TagTypeSupport.keyProblem(e.key(), declared);
             if (keyProblem != null) { add(out, e, keyProblem); continue; }
@@ -29,6 +30,14 @@ public final class TagTypeValidator {
                 }
             }
             if (type.unknown()) continue;
+            if (e.key().equals("example")) {
+                String problem = ExampleValidator.problem(e.value(), declared);
+                if (problem != null) add(out, e, "Huma example: " + problem);
+            }
+            if (e.key().equals("envDefault")) {
+                String problem = EnvDefaultValidator.problem(e.value(), declared, entries);
+                if (problem != null) add(out, e, "envDefault: " + problem);
+            }
             if (!declared.customSchema() && !type.customSchema() && !Set.of("time.Time", "net/url.URL", "net.IP").contains(type.name())) {
                 if (Set.of("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf").contains(e.key()) && !schemaType.numeric())
                     add(out, e, "Huma '" + e.key() + "' requires a numeric field");

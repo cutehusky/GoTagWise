@@ -64,6 +64,8 @@ Instantiated generic structs with exactly one `value`/`Value` field declared dir
 | DynamoDB element options | Slice/array/map container |
 | DynamoDB sets | Slice/array container and compatible string/numeric/binary-encoded elements |
 | env `init` | Pointer field |
+| envDefault | Go boolean, decimal integer/range, float and duration values; slice elements and map keys/values with configured separators; unsupported built-in kinds. See [env defaults](env-defaults.md) |
+| Huma example | Raw string or datatype-compatible JSON; string-array CSV; collection elements and known map values. See [examples](example-values.md) |
 | envPrefix | Nested struct, including pointer-to-struct |
 | envSeparator | Slice, array or map |
 | envKeyValSeparator | Map |

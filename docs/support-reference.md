@@ -27,11 +27,11 @@ Every listed key has key completion, a bundled `st<key>` live template and hover
 | `dynamodbav` | AWS attributevalue | Name followed by comma options | `omitempty`, `omitemptyelem`, `nullempty`, `nullemptyelem`, `string`, `binaryset`, `numberset`, `stringset`, `unixtime` | Known options; omit/null conflicts; mutually exclusive set encodings; set/container/element datatypes; numeric string encoding; time-compatible unixtime; unsupported field kinds. |
 | `enum` | HCL · Huma v2 | Text; arbitrary values unless noted | — | Shared Huma/HCL/TOML-style metadata; no typed default/enum content validation. |
 | `env` | caarlos0/env/v11 | Name followed by comma options | `required`, `notEmpty`, `file`, `unset`, `expand`, `init` | Known options; init requires a pointer; unsupported function/channel/complex types unless custom conversion is detected. |
-| `envDefault` | caarlos0/env/v11 | Text; arbitrary values unless noted | — | Tag syntax only; fallback text is not parsed as the field's runtime value. |
+| `envDefault` | caarlos0/env/v11 | Text; arbitrary values unless noted | — | Go boolean, decimal integer/range, float and duration literals; slice elements and map keys/values using sibling separators. Empty defaults, unknown/custom types, file input and expanded variables remain conservative. See env default guide. |
 | `envKeyValSeparator` | caarlos0/env/v11 | Text; arbitrary values unless noted | — | Map datatype; separator contents remain free-form. |
 | `envPrefix` | caarlos0/env/v11 | Text; arbitrary values unless noted | — | Nested struct or pointer-to-struct datatype. |
 | `envSeparator` | caarlos0/env/v11 | Text; arbitrary values unless noted | — | Slice, array or map datatype; separator contents remain free-form. |
-| `example` | Huma v2 | Text; arbitrary values unless noted | — | Tag syntax and documentation/completion; metadata content is free-form. Runtime schema semantics are not evaluated. |
+| `example` | Huma v2 | Text; arbitrary values unless noted | — | Huma schema datatype: raw strings, JSON boolean/integral number/number/array/object; string-array CSV, collection elements and map values. Unknown/custom schemas remain conservative. See example guide. |
 | `exclusiveMaximum` | Huma v2 | Numeric literal | — | Numeric tag value and numeric field datatype; no exclusive-bound relationship check. |
 | `exclusiveMinimum` | Huma v2 | Numeric literal | — | Numeric tag value and numeric field datatype; no exclusive-bound relationship check. |
 | `form` | Gin | Name followed by comma options | `default=`, `collection_format=` | Known options; Huma request pointer checks only in detected/explicit request context; Gin pointer fields remain allowed. Selected unsupported kinds checked. |
