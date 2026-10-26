@@ -27,7 +27,7 @@ $tests = @(Get-ChildItem -LiteralPath (Join-Path $root 'src/test/java') -Recurse
 if ($LASTEXITCODE -ne 0) { throw 'Test compilation failed' }
 Push-Location $root
 try {
-    & $java -cp "$mainClasses;$testClasses" dev.structtags.core.CoreTest
+    & $java -cp "$mainClasses;$testClasses" cutehusky.gotagwise.core.CoreTest
     if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
 } finally { Pop-Location }
 & $jar --create --file (Join-Path $lib 'GoTagWise.jar') -C $mainClasses . -C (Join-Path $root 'src/main/resources') .

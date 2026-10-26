@@ -30,7 +30,7 @@ $info = Get-Content -LiteralPath "$IdePath/product-info.json" -Raw | ConvertFrom
 $launch = $info.launch | Where-Object { $_.os -eq 'Windows' -and $_.arch -eq 'amd64' } | Select-Object -First 1
 $bootCp = ($launch.bootClassPathJarNames | ForEach-Object { "$IdePath/lib/$_" }) -join ';'
 $launchArgs = @('-Xmx1536m','-Djava.awt.headless=true',"-Didea.properties.file=$sandbox/idea.properties",
-    '-Didea.initially.ask.config=never',"-Dstructtags.smoke.report=$sandbox/editor-result.txt")
+    '-Didea.initially.ask.config=never',"-Dcutehusky.gotagwise.smoke.report=$sandbox/editor-result.txt")
 $launchArgs += @($launch.additionalJvmArguments | ForEach-Object { $_.Replace('%IDE_HOME%', $IdePath) })
 $launchArgs += @('-cp',$bootCp,'com.intellij.idea.Main','inspect',"$root/testData/inspection","$root/testData/inspection/profile.xml","$sandbox/results",'-v2')
 $quotedArgs = $launchArgs | ForEach-Object { '"' + $_.Replace('\','/').Replace('"','\"') + '"' }

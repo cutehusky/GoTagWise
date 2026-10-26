@@ -1,5 +1,5 @@
 <idea-plugin>
-  <id>dev.structtags.gotagwise</id>
+  <id>cutehusky.gotagwise</id>
   <name>GoTagWise</name>
   <version>0.1.0</version>
   <vendor>cutehusky</vendor>
@@ -13,13 +13,13 @@
   <depends>com.intellij.modules.platform</depends>
   <depends>org.jetbrains.plugins.go</depends>
   <extensions defaultExtensionNs="com.intellij">
-    <platform.backend.documentation.targetProvider implementation="dev.structtags.ide.StructTagDocumentationProvider"/>
-    <completion.contributor language="go" implementationClass="dev.structtags.ide.StructTagCompletionContributor" order="first"/>
+    <platform.backend.documentation.targetProvider implementation="cutehusky.gotagwise.ide.StructTagDocumentationProvider"/>
+    <completion.contributor language="go" implementationClass="cutehusky.gotagwise.ide.StructTagCompletionContributor" order="first"/>
     <localInspection language="go" shortName="GoTagWise" displayName="GoTagWise: Go struct tags"
                      groupName="Struct tags" enabledByDefault="true" level="WARNING"
-                     implementationClass="dev.structtags.ide.StructTagInspection"/>
-    <liveTemplateContext contextId="GoTagWise" implementation="dev.structtags.ide.StructTagTemplateContext"/>
-    <defaultLiveTemplatesProvider implementation="dev.structtags.ide.StructTagTemplates"/>
-    <liveTemplateMacro implementation="dev.structtags.ide.StructTagNameMacro"/>
+                     implementationClass="cutehusky.gotagwise.ide.StructTagInspection"/>
+    <liveTemplateContext contextId="GoTagWise" implementation="cutehusky.gotagwise.ide.StructTagTemplateContext"/>
+    <defaultLiveTemplatesProvider implementation="cutehusky.gotagwise.ide.StructTagTemplates"/>
+    <liveTemplateMacro implementation="cutehusky.gotagwise.ide.StructTagNameMacro"/>
   </extensions>
 </idea-plugin>

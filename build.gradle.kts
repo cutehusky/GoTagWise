@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.19.0"
 }
 
-group = "dev.structtags"
+group = "cutehusky.gotagwise"
 version = "0.1.0"
 
 repositories {
@@ -32,7 +32,7 @@ intellijPlatform {
 val coreTest by tasks.registering(JavaExec::class) {
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
-    mainClass = "dev.structtags.core.CoreTest"
+    mainClass = "cutehusky.gotagwise.core.CoreTest"
     workingDir = projectDir
 }
 tasks.check { dependsOn(coreTest) }

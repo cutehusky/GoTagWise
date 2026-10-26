@@ -52,8 +52,8 @@ Before proposing an implementation change, run checks relevant to it. Changes to
 
 | Path | Purpose |
 | --- | --- |
-| `src/main/java/dev/structtags/core` | Catalog, parser, value/type rules, references, completion policy and documentation rendering |
-| `src/main/java/dev/structtags/ide` | Go PSI, inspections, completion, templates and documentation targets |
+| `src/main/java/cutehusky/gotagwise/core` | Catalog, parser, value/type rules, references, completion policy and documentation rendering |
+| `src/main/java/cutehusky/gotagwise/ide` | Go PSI, inspections, completion, templates and documentation targets |
 | `src/main/resources` | Plugin descriptor, bundled templates and inspection description |
 | `src/test/java` | Dependency-free regression suite and reference/template generators |
 | `src/ideTest` | Test-only IDE integration plugin |
@@ -69,10 +69,10 @@ Compile the core and generator utilities, then regenerate committed artifacts:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path build/doc-generator | Out-Null
-javac --release 21 -encoding UTF-8 -d build/doc-generator src/main/java/dev/structtags/core/*.java src/test/java/dev/structtags/core/*.java
-java -cp build/doc-generator dev.structtags.core.TemplateGenerator
-java -cp build/doc-generator dev.structtags.core.SupportReferenceGenerator
-java -cp build/doc-generator dev.structtags.core.SupportReferenceGenerator --check
+javac --release 21 -encoding UTF-8 -d build/doc-generator src/main/java/cutehusky/gotagwise/core/*.java src/test/java/cutehusky/gotagwise/core/*.java
+java -cp build/doc-generator cutehusky.gotagwise.core.TemplateGenerator
+java -cp build/doc-generator cutehusky.gotagwise.core.SupportReferenceGenerator
+java -cp build/doc-generator cutehusky.gotagwise.core.SupportReferenceGenerator --check
 ```
 
 The template generator updates `src/main/resources/liveTemplates/GoTagWise.xml`; the regression suite detects stale templates. The support generator updates [struct tags](support-reference.md), [validator rules](validator-rules.md), and [Huma keys](huma-reference.md). Update the manually maintained [check inventory](checks-reference.md) when inspection behavior changes.

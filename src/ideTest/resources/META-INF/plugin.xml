@@ -1,12 +1,12 @@
 <idea-plugin>
-  <id>dev.structtags.smoke</id>
+  <id>cutehusky.gotagwise.smoke</id>
   <name>Struct Tags Smoke Tests</name>
   <version>0.1.0</version>
   <vendor>cutehusky</vendor>
   <depends>com.intellij.modules.platform</depends>
-  <depends>dev.structtags.gotagwise</depends>
+  <depends>cutehusky.gotagwise</depends>
   <depends>org.jetbrains.plugins.go</depends>
   <extensions defaultExtensionNs="com.intellij">
-    <postStartupActivity implementation="dev.structtags.smoke.EditorSmokeStarter"/>
+    <postStartupActivity implementation="cutehusky.gotagwise.smoke.EditorSmokeStarter"/>
   </extensions>
 </idea-plugin>
