@@ -2,7 +2,7 @@
   <id>dev.structtags.gotagwise</id>
   <name>GoTagWise</name>
   <version>0.1.0</version>
-  <vendor>GoTagWise contributors</vendor>
+  <vendor>cutehusky</vendor>
   <idea-version since-build="262"/>
   <description><![CDATA[
     Smart completion, field-aware live templates, and inspections for Go struct tags.

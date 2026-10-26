@@ -19,6 +19,8 @@ Suggestions use the current datatype:
 
 Unknown or unresolved types retain suggestions. Detected custom encoders and configured custom rules preserve the applicable choices. Known incompatible tag/template suggestions from subsequent completion contributors are also filtered.
 
+Generic structs with a direct `value T` or `Value T` payload are checked as their supplied payload type: `Wrap[string]` offers string rules, while `Wrap[int]` hides `email`. See [generic wrapper inference](generic-wrappers.md) for exact qualification and alias behavior.
+
 Type an abbreviation such as `stjson`, `stbson`, `stenv`, `stbinding`, `stvalidate`, `stgorm`, `stbun`, or `sthuma`, then **Tab**. Each catalog key has an `st<key>` template; `sthuma` adds a combined JSON/schema example. Mapping templates derive names from the Go field: `HTTPServerID` becomes `httpServerID` for JSON, `http_server_id` for other mappings, and `HTTP_SERVER_ID` for env. Tab moves through editable values.
 
 Manage templates under **Settings → Editor → Live Templates → GoTagWise**. They expand at tag-key positions and are filtered by datatype.

@@ -12,6 +12,8 @@ in this inspection's options, or disable unknown-rule diagnostics for extensible
 Inspection also supports interpreted Go string literals. Shared tag keys use the union
 of supported library options. Datatype checks resolve pointers, aliases, named types and
 container element types. Unknown types and detected custom encoders are checked conservatively.
+Generic structs with a direct value/Value type-parameter field use the supplied payload datatype.
+Non-generic structs, fixed payload fields and ambiguous wrappers are not unwrapped.
 <p>Huma request parameters cannot use pointer fields. Shared form/header keys need a Huma
 request context; enable the explicit Huma option for ambiguous request model structs.
 Body pointers and ordinary Gin form/header pointers are allowed.

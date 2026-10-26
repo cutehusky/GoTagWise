@@ -45,6 +45,8 @@ Parameter recognition is not a general validator for every argument's runtime co
 
 Pointers, named underlying types, aliases, collection elements and map keys are resolved through Go PSI. The following are the implemented static restrictions:
 
+Instantiated generic structs with exactly one `value`/`Value` field declared directly as a type parameter are projected to the corresponding type argument. Nested wrappers and container arguments are resolved; non-generic, fixed-payload and ambiguous wrappers remain structs. This policy is shared by datatype checks, completion and documentation. See [generic wrappers](generic-wrappers.md).
+
 | Tag/option | Check |
 | --- | --- |
 | Serialization tags | Selected unsupported function/channel/complex fields; detected custom converters can preserve compatibility |

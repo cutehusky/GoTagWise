@@ -110,6 +110,63 @@ public final class EditorSmokeStarter implements StartupActivity.DumbAware {
         runTypedCompletionChecks(project);
         runTypedDocumentationChecks(project);
         runReferenceChecks(project);
+        runGenericWrapperChecks(project);
+    }
+    private void runGenericWrapperChecks(Project project) {
+        String wrap = "package smoke\ntype Wrap[T any] struct { value T }\n";
+        typeCheck(project, wrap + "type T struct { Email Wrap[string] `validate:\"email\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Count Wrap[int] `validate:\"email\"` }", false, "string field");
+        typeCheck(project, wrap + "type T struct { Count Wrap[int] `minimum:\"1\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Text Wrap[string] `minimum:\"1\"` }", false, "numeric field");
+        typeCheck(project, wrap + "type T struct { Text Wrap[Wrap[string]] `validate:\"email\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Emails []Wrap[string] `validate:\"dive,email\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Emails Wrap[[]string] `validate:\"dive,email\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Emails map[string]Wrap[string] `validate:\"dive,email\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Emails Wrap[[]int] `json:\",string\"` }", false, "only supported");
+        typeCheck(project, wrap + "type T struct { Query *Wrap[string] `query:\"q\"` }", false, "does not support pointer");
+        typeCheck(project, wrap + "type T struct { Query Wrap[*string] `query:\"q\"` }", false, null);
+        typeCheck(project, wrap + "type Alias = Wrap[string]\ntype T struct { Email Alias `validate:\"email\"` }", false, null);
+        typeCheck(project, wrap + "type Alias[T any] = Wrap[T]\ntype T struct { Email Alias[string] `validate:\"email\"` }", false, null);
+        typeCheck(project, wrap + "type Alias[T any] = Wrap[[]T]\ntype T struct { Emails Alias[string] `validate:\"dive,email\"` }", false, null);
+        typeCheck(project, wrap + "type Alias[K comparable,V any] = Wrap[map[K]V]\ntype T struct { Emails Alias[int,string] `validate:\"dive,keys,numeric,endkeys,email\"` }", false, null);
+        typeCheck(project, wrap + "func (Wrap[T]) Validate() error { return nil }\ntype T struct { Email Wrap[string] `validate:\"validateFn\"` }", false, null);
+        typeCheck(project, wrap + "type Defined Wrap[string]\ntype T struct { Data Defined `minProperties:\"1\"` }", false, null);
+        typeCheck(project, wrap + "type Defined Wrap[string]\ntype T struct { Email Defined `validate:\"email\"` }", false, "string field");
+        typeCheck(project, "package smoke\ntype Wrap[A,B any] struct { Value B; Set bool }\ntype T struct { Email Wrap[int,string] `validate:\"email\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Wrap[A,B any] struct { Value B }\ntype T struct { Count Wrap[string,int] `minimum:\"1\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Wrap[T any] struct { value, Other T }\ntype T struct { Email Wrap[string] `validate:\"email\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Plain struct { value string }\ntype T struct { Email Plain `validate:\"email\"` }", false, "string field");
+        typeCheck(project, "package smoke\ntype Fixed[T any] struct { value string }\ntype T struct { Email Fixed[string] `validate:\"email\"` }", false, "string field");
+        typeCheck(project, "package smoke\ntype Box[T any] struct { Data T }\ntype T struct { Data Box[string] `minProperties:\"1\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Box[T any] struct { value []T }\ntype T struct { Data Box[string] `minProperties:\"1\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Box[T any] struct { value *T }\ntype T struct { Data Box[string] `minProperties:\"1\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Box[T any] struct { value T; Value T }\ntype T struct { Data Box[string] `minProperties:\"1\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Box[T any] struct { value Box[T] }\ntype T struct { Data Box[string] `minProperties:\"1\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Count int; Other Wrap[int] `validate:\"eqfield=Count\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Flag Wrap[bool]; Name string `validate:\"required_if=Flag yes\"` }", false, "true or false");
+        typeCheck(project, wrap + "type T struct { Flag Wrap[bool]; Name string `validate:\"required_if=Flag true\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Email Wrap[unresolved.Type] `validate:\"email\"` }", false, null);
+        typeCheck(project, wrap + "type T struct { Email Wrap `validate:\"email\"` }", false, null);
+        check(completeSource(project, wrap + "type T struct { Count Wrap[int] `validate:\"em<caret>\"` }").isEmpty(), "Wrapper integer hides email completion");
+        check(completeSource(project, wrap + "type T struct { Email Wrap[string] `validate:\"em<caret>\"` }").contains("email"), "Wrapper string offers email completion");
+        check(completeSource(project, wrap + "type T struct { Query Wrap[string] `qu<caret>` }").contains("query"), "Value wrapper offers Huma query completion");
+        check(completeSource(project, wrap + "type T struct { Query *Wrap[string] `qu<caret>` }").isEmpty(), "Physical pointer wrapper hides Huma query completion");
+        PsiFile documented = PsiFileFactory.getInstance(project).createFileFromText("wrappers.go", GoLanguage.INSTANCE, wrap + "type T struct { Email Wrap[string] `validate:\"email\"` }");
+        var targets = new StructTagDocumentationProvider().documentationTargets(documented, documented.getText().lastIndexOf("email") + 1);
+        check(targets.size() == 1 && targets.get(0).computeDocumentationHint().contains("valid email address"), "Wrapper hover uses inferred argument datatype");
+    }
+    private Set<String> completeSource(Project project, String marked) {
+        int offset = marked.indexOf("<caret>");
+        PsiFile file = PsiFileFactory.getInstance(project).createFileFromText("wrappers.go", GoLanguage.INSTANCE, marked.replace("<caret>", ""));
+        EditorFactory factory = EditorFactory.getInstance();
+        Editor editor = factory.createEditor(Objects.requireNonNull(PsiDocumentManager.getInstance(project).getDocument(file)), project);
+        try {
+            var contributor = new StructTagCompletionContributor();
+            Set<String> values = new HashSet<>();
+            var params = new CompletionParameters(Objects.requireNonNull(file.findElementAt(offset)), file, CompletionType.BASIC, offset, 1, editor, () -> false);
+            contributor.fillCompletionVariants(params, new CapturingResult(PrefixMatcher.ALWAYS_TRUE, contributor, values, List.of()));
+            return values;
+        } finally { factory.releaseEditor(editor); }
     }
     private void runReferenceChecks(Project project) {
         typeCheck(project, "package smoke\ntype T struct { Count int; Confirm int `validate:\"eqfield=Count\"` }", false, null);

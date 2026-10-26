@@ -4,6 +4,8 @@
 
 **Smart struct tags for Go.**
 
+Author: **cutehusky**.
+
 A GoLand plugin for writing and checking Go struct tags. Get datatype-aware completion, editable live templates, per-rule hover documentation, and inspections for tag syntax, options, field references, and conditional values.
 
 ## Features
@@ -13,6 +15,7 @@ A GoLand plugin for writing and checking Go struct tags. Get datatype-aware comp
 - Hover over a tag or individual validator rule for documentation and examples.
 - Find malformed tags, duplicate keys, incompatible datatypes, missing referenced fields, and invalid conditional literals.
 - Track validator `dive`, `keys`, and `endkeys` through collection elements and map keys/values.
+- Infer the payload datatype of generic wrappers with a `value T` or `Value T` field, such as `Wrap[string]` → `string`.
 - Configure custom validator aliases, conform sanitizers, and Huma request-context assumptions.
 
 Supports JSON, XML, YAML, BSON, DynamoDB, env, Gin, HCL, MessagePack, GORM, Redis, TOML, validator/v10, Bun, conform, and Huma v2. See the [complete support inventory](docs/support-reference.md) for exact keys and options.
@@ -68,6 +71,7 @@ See the [usage guide](docs/usage.md) for completion examples, templates, Huma po
 | [Huma reference](docs/huma-reference.md) | All 33 handled Huma-related keys and checks |
 | [Implemented checks](docs/checks-reference.md) | Inspection coverage and runtime-only limits |
 | [Validator field references](docs/validator-references.md) | Comparison/conditional rules, nested paths, and examples |
+| [Generic wrappers](docs/generic-wrappers.md) | Automatic payload-type inference and qualification rules |
 | [Development](docs/development.md) | Build, tests, project layout, and documentation generation |
 
 The plugin performs static checks. Unknown/custom types remain conservative, and shared HCL/TOML/Redis keys use combined vocabularies. Runtime input, custom registries, pointer nilness, and collection entry existence still need application tests.

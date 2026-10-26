@@ -80,6 +80,9 @@ final class TypeValidationTest {
         check("dynamodbav:\",string\"", number, false, null);
         check("dynamodbav:\",numberset\"", slice(number), false, null);
         check("dynamodbav:\",stringset\"", slice(number), false, "incompatible element");
+        check("query:\"q\"", ptr(STRING).asGenericValueWrapper(), true, null);
+        check("query:\"q\"", ptr(STRING.asGenericValueWrapper()), true, "pointer fields");
+        check("json:\",string\"", ptr(INT).asGenericValueWrapper(), false, null);
         return checks;
     }
 }

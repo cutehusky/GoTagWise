@@ -45,12 +45,14 @@ $syntaxProblems = @($problems | Where-Object { $_.file -like '*/tags.go' })
 $typeProblems = @($problems | Where-Object { $_.file -like '*/types.go' })
 $ruleProblems = @($problems | Where-Object { $_.file -like '*/rules.go' })
 $referenceProblems = @($problems | Where-Object { $_.file -like '*/references.go' })
-if ($syntaxProblems.Count -ne 6 -or $typeProblems.Count -ne 14 -or $ruleProblems.Count -ne 12 -or $referenceProblems.Count -ne 12 -or $problems.Count -ne 44) { throw "Expected six value, fourteen datatype, twelve rule and twelve reference diagnostics; found $($syntaxProblems.Count), $($typeProblems.Count), $($ruleProblems.Count), $($referenceProblems.Count)" }
+$wrapperProblems = @($problems | Where-Object { $_.file -like '*/wrappers.go' })
+if ($syntaxProblems.Count -ne 6 -or $typeProblems.Count -ne 14 -or $ruleProblems.Count -ne 12 -or $referenceProblems.Count -ne 12 -or $wrapperProblems.Count -ne 7 -or $problems.Count -ne 51) { throw "Expected six value, fourteen datatype, twelve rule, twelve reference and seven wrapper diagnostics; found $($syntaxProblems.Count), $($typeProblems.Count), $($ruleProblems.Count), $($referenceProblems.Count), $($wrapperProblems.Count)" }
 $lines = @($syntaxProblems | ForEach-Object { [int]$_.line })
 if (($lines -join ',') -ne '4,5,6,7,8,9') { throw "Unexpected inspection locations: $lines" }
 Write-Output $editorReport.Trim()
 if (@($typeProblems | Where-Object { [int]$_.line -lt 8 -or [int]$_.line -gt 21 }).Count -ne 0) { throw 'Unexpected datatype diagnostics on valid fields' }
 if (@($ruleProblems | Where-Object { [int]$_.line -lt 4 -or [int]$_.line -gt 15 }).Count -ne 0) { throw 'Unexpected rule diagnostics on valid fields' }
 if (@($referenceProblems | Where-Object { [int]$_.line -lt 5 -or [int]$_.line -gt 16 }).Count -ne 0) { throw 'Unexpected reference diagnostics on valid fields' }
-Write-Output 'Passed six value, fourteen datatype, twelve rule and twelve reference inspection diagnostics; valid fields have no plugin diagnostics.'
+if (@($wrapperProblems | Where-Object { [int]$_.line -lt 5 -or [int]$_.line -gt 11 }).Count -ne 0) { throw 'Unexpected wrapper diagnostics on valid fields' }
+Write-Output 'Passed six value, fourteen datatype, twelve rule, twelve reference and seven wrapper inspection diagnostics; valid fields have no plugin diagnostics.'
 Write-Output "Reports: $sandbox"

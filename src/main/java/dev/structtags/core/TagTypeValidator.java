@@ -22,7 +22,7 @@ public final class TagTypeValidator {
                 for (String message : ValidatorTypeRules.validate(e.value(), declared, customRules)) add(out, e, message);
             }
             if (humaInput && Set.of("form", "header", "path", "query", "cookie").contains(e.key()) && !e.value().isEmpty()) {
-                if (declared.kind() == POINTER) {
+                if (declared.kind() == POINTER && !declared.genericValueWrapper()) {
                     add(out, e, "Huma request parameter '" + e.key() + "' does not support pointer fields; use a value or a ParamWrapper value for optionality");
                 } else if (Set.of(FUNCTION, CHANNEL, COMPLEX).contains(type.kind()) && !type.has("UnmarshalText") && !type.has("Receiver")) {
                     add(out, e, "Huma request parameter '" + e.key() + "' does not support this datatype (" + type.name() + ")");
