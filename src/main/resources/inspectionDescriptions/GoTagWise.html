@@ -1,0 +1,21 @@
+<html><body>
+Reports malformed Go struct tags, duplicate keys, unknown serialization options,
+invalid validation parameters, conflicting DynamoDB/XML options, invalid GORM numeric
+directives, invalid Huma boolean, numeric or length values, incompatible Go field datatypes,
+and validator/binding rules used on unsupported field, element or map key types.
+<p>Checks referenced Go fields for comparison and conditional rules, including nested/indexed
+paths and promoted embedded fields. Reports missing or ambiguous fields, incompatible
+comparison kinds, malformed Field Value pairs and invalid condition literals.
+<p>Unknown tag keys are allowed. Add validator aliases and custom conform sanitizers
+in this inspection's options, or disable unknown-rule diagnostics for extensible libraries.
+<p>Completion and live templates operate inside raw (backtick) struct tags.
+Inspection also supports interpreted Go string literals. Shared tag keys use the union
+of supported library options. Datatype checks resolve pointers, aliases, named types and
+container element types. Unknown types and detected custom encoders are checked conservatively.
+<p>Huma request parameters cannot use pointer fields. Shared form/header keys need a Huma
+request context; enable the explicit Huma option for ambiguous request model structs.
+Body pointers and ordinary Gin form/header pointers are allowed.
+<p>Validator dive, keys and endkeys change the current datatype. The same policy filters
+tag keys, options, rules and bundled template suggestions in completion. Unknown/custom
+types and registered custom rules are handled conservatively.
+</body></html>

@@ -1,0 +1,256 @@
+<templateSet group="GoTagWise">
+  <template name="stjson" value="json:&quot;$VALUE$&quot;$END$" description="encoding/json: json" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;camel&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stbson" value="bson:&quot;$VALUE$&quot;$END$" description="MongoDB BSON: bson" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stdynamodbav" value="dynamodbav:&quot;$VALUE$&quot;$END$" description="AWS attributevalue: dynamodbav" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stenv" value="env:&quot;$VALUE$&quot;$END$" description="caarlos0/env/v11: env" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;upper&quot;)" defaultValue="&quot;FIELD&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stenvDefault" value="envDefault:&quot;$VALUE$&quot;$END$" description="caarlos0/env/v11: envDefault" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stenvPrefix" value="envPrefix:&quot;$VALUE$&quot;$END$" description="caarlos0/env/v11: envPrefix" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stenvSeparator" value="envSeparator:&quot;$VALUE$&quot;$END$" description="caarlos0/env/v11: envSeparator" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;,&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stenvKeyValSeparator" value="envKeyValSeparator:&quot;$VALUE$&quot;$END$" description="caarlos0/env/v11: envKeyValSeparator" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;,&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stxml" value="xml:&quot;$VALUE$&quot;$END$" description="encoding/xml: xml" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="styaml" value="yaml:&quot;$VALUE$&quot;$END$" description="yaml.v3: yaml" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmsgpack" value="msgpack:&quot;$VALUE$&quot;$END$" description="vmihailenco/msgpack: msgpack" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sttoml" value="toml:&quot;$VALUE$&quot;$END$" description="BurntSushi/toml · pelletier/go-toml: toml" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stcomment" value="comment:&quot;$VALUE$&quot;$END$" description="pelletier/go-toml: comment" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;description&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stcommented" value="commented:&quot;$VALUE$&quot;$END$" description="pelletier/go-toml: commented" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmultiline" value="multiline:&quot;$VALUE$&quot;$END$" description="pelletier/go-toml: multiline" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stliteral" value="literal:&quot;$VALUE$&quot;$END$" description="pelletier/go-toml: literal" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stredis" value="redis:&quot;$VALUE$&quot;$END$" description="go-redis/v9 · redigo/redis: redis" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sthcl" value="hcl:&quot;$VALUE$&quot;$END$" description="HashiCorp gohcl · alecthomas/hcl: hcl" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sthelp" value="help:&quot;$VALUE$&quot;$END$" description="HCL · Huma v2: help" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stdefault" value="default:&quot;$VALUE$&quot;$END$" description="HCL · Huma v2: default" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stenum" value="enum:&quot;$VALUE$&quot;$END$" description="HCL · Huma v2: enum" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stform" value="form:&quot;$VALUE$&quot;$END$" description="Gin: form" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stquery" value="query:&quot;$VALUE$&quot;$END$" description="Huma v2: query" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stheader" value="header:&quot;$VALUE$&quot;$END$" description="Gin · Huma v2: header" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sturi" value="uri:&quot;$VALUE$&quot;$END$" description="Gin: uri" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stpath" value="path:&quot;$VALUE$&quot;$END$" description="Huma v2: path" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stcookie" value="cookie:&quot;$VALUE$&quot;$END$" description="Huma v2: cookie" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stcollection_format" value="collection_format:&quot;$VALUE$&quot;$END$" description="Gin binding: collection_format" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;csv&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sttime_format" value="time_format:&quot;$VALUE$&quot;$END$" description="Gin binding: time_format" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;2006-01-02&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sttime_utc" value="time_utc:&quot;$VALUE$&quot;$END$" description="Gin binding: time_utc" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sttime_location" value="time_location:&quot;$VALUE$&quot;$END$" description="Gin binding: time_location" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;UTC&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stbinding" value="binding:&quot;$VALUE$&quot;$END$" description="Gin binding / validator/v10: binding" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;required&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stvalidate" value="validate:&quot;$VALUE$&quot;$END$" description="go-playground/validator/v10: validate" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;required&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stconform" value="conform:&quot;$VALUE$&quot;$END$" description="leebenson/conform: conform" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;trim,lower&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stgorm" value="gorm:&quot;$VALUE$&quot;$END$" description="GORM: gorm" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;column:field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stbun" value="bun:&quot;$VALUE$&quot;$END$" description="Bun: bun" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="smartGoTagName(&quot;snake&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stdoc" value="doc:&quot;$VALUE$&quot;$END$" description="Huma v2: doc" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stformat" value="format:&quot;$VALUE$&quot;$END$" description="Huma v2: format" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stconst" value="const:&quot;$VALUE$&quot;$END$" description="Huma v2: const" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stpattern" value="pattern:&quot;$VALUE$&quot;$END$" description="Huma v2: pattern" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stpatternDescription" value="patternDescription:&quot;$VALUE$&quot;$END$" description="Huma v2: patternDescription" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stexample" value="example:&quot;$VALUE$&quot;$END$" description="Huma v2: example" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stdependentRequired" value="dependentRequired:&quot;$VALUE$&quot;$END$" description="Huma v2: dependentRequired" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stcontentType" value="contentType:&quot;$VALUE$&quot;$END$" description="Huma v2: contentType" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;value&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="strequired" value="required:&quot;$VALUE$&quot;$END$" description="Huma v2: required" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="streadOnly" value="readOnly:&quot;$VALUE$&quot;$END$" description="Huma v2: readOnly" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stwriteOnly" value="writeOnly:&quot;$VALUE$&quot;$END$" description="Huma v2: writeOnly" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stdeprecated" value="deprecated:&quot;$VALUE$&quot;$END$" description="Huma v2: deprecated" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sthidden" value="hidden:&quot;$VALUE$&quot;$END$" description="Huma v2: hidden" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stuniqueItems" value="uniqueItems:&quot;$VALUE$&quot;$END$" description="Huma v2: uniqueItems" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stnullable" value="nullable:&quot;$VALUE$&quot;$END$" description="Huma v2: nullable" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;true&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stminimum" value="minimum:&quot;$VALUE$&quot;$END$" description="Huma v2: minimum" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmaximum" value="maximum:&quot;$VALUE$&quot;$END$" description="Huma v2: maximum" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stexclusiveMinimum" value="exclusiveMinimum:&quot;$VALUE$&quot;$END$" description="Huma v2: exclusiveMinimum" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stexclusiveMaximum" value="exclusiveMaximum:&quot;$VALUE$&quot;$END$" description="Huma v2: exclusiveMaximum" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmultipleOf" value="multipleOf:&quot;$VALUE$&quot;$END$" description="Huma v2: multipleOf" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stminLength" value="minLength:&quot;$VALUE$&quot;$END$" description="Huma v2: minLength" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmaxLength" value="maxLength:&quot;$VALUE$&quot;$END$" description="Huma v2: maxLength" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stminItems" value="minItems:&quot;$VALUE$&quot;$END$" description="Huma v2: minItems" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmaxItems" value="maxItems:&quot;$VALUE$&quot;$END$" description="Huma v2: maxItems" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stminProperties" value="minProperties:&quot;$VALUE$&quot;$END$" description="Huma v2: minProperties" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="stmaxProperties" value="maxProperties:&quot;$VALUE$&quot;$END$" description="Huma v2: maxProperties" toReformat="false" toShortenFQNames="false">
+    <variable name="VALUE" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+  <template name="sthuma" value="json:&quot;$NAME$&quot; doc:&quot;$DOC$&quot; minLength:&quot;$MIN$&quot;$END$" description="Huma v2 string schema" toReformat="false" toShortenFQNames="false">
+    <variable name="NAME" expression="smartGoTagName(&quot;camel&quot;)" defaultValue="&quot;field&quot;" alwaysStopAt="true"/>
+    <variable name="DOC" expression="" defaultValue="&quot;Description&quot;" alwaysStopAt="true"/>
+    <variable name="MIN" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true"/>
+    <context><option name="GoTagWise" value="true"/></context>
+  </template>
+</templateSet>
