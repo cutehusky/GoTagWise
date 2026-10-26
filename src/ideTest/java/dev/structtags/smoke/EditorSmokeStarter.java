@@ -110,7 +110,38 @@ public final class EditorSmokeStarter implements StartupActivity.DumbAware {
         runTypedCompletionChecks(project);
         runTypedDocumentationChecks(project);
         runReferenceChecks(project);
+        runReferenceCompletionChecks(project);
         runGenericWrapperChecks(project);
+    }
+    private void runReferenceCompletionChecks(Project project) {
+        String fields = "Description *string `json:\"description,omitempty\"`; Count int; Wide int64; Enabled bool; ";
+        check(complete(project, fields + "Title string `validate:\"excluded_if=Des<caret>\"`").contains("Description"), "Conditional references complete Go field names");
+        check(!complete(project, fields + "Title string `validate:\"excluded_if=<caret>\"`").contains("description"), "Reference completion excludes JSON aliases");
+        check(complete(project, fields + "Title string `binding:\"excluded_if=Des<caret>\"`").contains("Description"), "Gin binding reference completion");
+        check(complete(project, fields + "Title string `validate:\"required|excluded_if=Des<caret>\"`").contains("Description"), "References inside OR rules");
+        check(complete(project, fields + "Title string `validate:\"excluded_if=Description <caret>\"`").isEmpty(), "No field suggestions in literal slot");
+        check(complete(project, fields + "Title string `validate:\"excluded_if=Description 'New <caret>\"`").isEmpty(), "No field suggestions inside quoted literal");
+        check(complete(project, fields + "Title string `validate:\"excluded_if=Description '' Co<caret>\"`").contains("Count"), "Next conditional reference after empty string");
+        check(!complete(project, fields + "Title string `validate:\"required_if=Description '' Des<caret>\"`").contains("Description"), "No duplicate required_if reference");
+        check(complete(project, fields + "Title string `validate:\"excluded_if=Description '' Des<caret>\"`").contains("Description"), "Other conditional rules may repeat references");
+        check(complete(project, fields + "Title string `validate:\"required_with=Enabled Co<caret>\"`").contains("Count"), "Presence reference accepts different field types");
+        Set<String> comparison = complete(project, fields + "Title string `validate:\"eqfield=<caret>\"`");
+        check(comparison.contains("Description") && !comparison.contains("Count") && !comparison.contains("Enabled"), "Comparison references filter incompatible types");
+        Set<String> numeric = complete(project, fields + "Number int `validate:\"gtefield=<caret>\"`");
+        check(numeric.contains("Count") && !numeric.contains("Wide"), "Numeric references match exact Go numeric kind");
+        check(complete(project, fields + "Title string `validate:\"fieldcontains=Des<caret>\"`").contains("Description"), "String reference rule completion");
+        check(complete(project, fields + "Titles []int `validate:\"dive,eqfield=Co<caret>\"`").contains("Count"), "Reference completion follows dive element datatype");
+        String address = "package smoke\ntype Address struct { City string; Zip int }; type T struct { Addr *Address; Items []Address; Lookup map[string]Address; Title string `validate:\"eqcsfield=";
+        check(completeSource(project, address + "Addr.C<caret>\"` }").contains("Addr.City"), "Nested pointer field path completion");
+        check(completeSource(project, address + "Items[0].C<caret>\"` }").contains("Items[0].City"), "Slice indexed field path completion");
+        check(completeSource(project, address + "Lookup[a.b].C<caret>\"` }").contains("Lookup[a.b].City"), "Map keys containing dots retain path prefix");
+        check(completeSource(project, address + "<caret>\"` }").contains("Addr."), "Struct navigation offered for nested comparison");
+        check(completeSource(project, "package smoke\ntype Item struct { ID string; Data []string }; type T struct { Items []Item `validate:\"unique=<caret>\"` }").equals(Set.of("ID")), "Unique completes comparable element fields only");
+        check(completeSource(project, "package smoke\ntype Item struct { ID string }; type T struct { Items [][]Item `validate:\"dive,unique=I<caret>\"` }").contains("ID"), "Unique completion follows nested collection traversal");
+        check(completeSource(project, "package smoke\ntype Base struct { Code string }; type T struct { Base; Name string `validate:\"eqfield=Co<caret>\"` }").contains("Code"), "Promoted fields offered");
+        check(completeSource(project, "package smoke\ntype A struct { Code string }; type B struct { Code string }; type T struct { A; B; Name string `validate:\"eqfield=Co<caret>\"` }").isEmpty(), "Ambiguous promoted fields excluded");
+        check(completeSource(project, "package smoke\ntype Wrap[T any] struct { Value T }; type T struct { Description *string; Title Wrap[string] `validate:\"excluded_if=Des<caret>\"` }").contains("Description"), "Generic wrappers preserve parent reference scope");
+        check(complete(project, "Count int; Name string `validate:\"excluded_if=Count ''<caret>\"`").isEmpty(), "Quoted values never become field names");
     }
     private void runGenericWrapperChecks(Project project) {
         String wrap = "package smoke\ntype Wrap[T any] struct { value T }\n";
@@ -179,6 +210,13 @@ public final class EditorSmokeStarter implements StartupActivity.DumbAware {
         typeCheck(project, "package smoke\ntype T struct { Count int; Email string `validate:\"required_with=Count\"` }", false, null);
         typeCheck(project, "package smoke\ntype T struct { Age int; Email string `validate:\"required_if=Age wrong\"` }", false, "integer literal");
         typeCheck(project, "package smoke\ntype T struct { Enabled bool; Email string `validate:\"excluded_if=Enabled yes\"` }", false, "true or false");
+        typeCheck(project, "package smoke\ntype Request struct { Name string `validate:\"\"`; Email *string `validate:\"excluded_if=Name \"` }", false, "use excluded_if=Name ''");
+        typeCheck(project, "package smoke\ntype Request struct { Name string `validate:\"\"`; Email *string `validate:\"excluded_if=Name ''\"` }", false, null);
+        typeCheck(project, "package smoke\ntype Request struct { Name string; Email *string `binding:\"excluded_if=Name \"` }", false, "trailing whitespace is not a value");
+        typeCheck(project, "package smoke\ntype Request struct { Name string; Email *string `binding:\"excluded_if=Name ''\"` }", false, null);
+        typeCheck(project, "package smoke\nimport \"example.com/utils\"\ntype UpdateToDoRequest struct { Title utils.PatchField[string] `json:\"title\" validate:\"excluded_if=description ''\"`; Description *string `json:\"description,omitempty\"`; Details map[string]any `json:\"details,omitempty\" validate:\"dive\"` }", false, "use Go field path 'Description'");
+        typeCheck(project, "package smoke\nimport \"example.com/utils\"\ntype UpdateToDoRequest struct { Title utils.PatchField[string] `json:\"title\" validate:\"excluded_if=Description ''\"`; Description *string `json:\"description,omitempty\"`; Details map[string]any `json:\"details,omitempty\" validate:\"dive\"` }", false, null);
+        typeCheck(project, "package smoke\ntype PatchField[T any] struct { Value T }; type UpdateToDoRequest struct { Title PatchField[string] `json:\"title\" validate:\"excluded_if=Description ''\"`; Description *string `json:\"description,omitempty\"`; Details map[string]any `json:\"details,omitempty\" validate:\"dive\"` }", false, null);
         typeCheck(project, "package smoke\ntype T struct { Mode string; Email string `validate:\"required_if=Mode 'New York'\"` }", false, null);
         typeCheck(project, "package smoke\ntype T struct { Email string `binding:\"required_without=Missing\"` }", false, "missing or invalid");
         typeCheck(project, "package smoke\ntype T struct { Mode string; Email string `validate:\"required_if=Mode x Mode y\"` }", false, "repeats reference");

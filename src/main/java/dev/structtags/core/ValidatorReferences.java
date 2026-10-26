@@ -20,6 +20,60 @@ public final class ValidatorReferences {
     private static final Set<String> COMPARE = Set.of("eqfield", "nefield", "gtfield", "gtefield", "ltfield", "ltefield", "eqcsfield", "necsfield", "gtcsfield", "gtecsfield", "ltcsfield", "ltecsfield");
     private static final Set<String> PAIRS = Set.of("required_if", "required_unless", "excluded_if", "excluded_unless", "skip_unless");
     private static final Set<String> PRESENCE = Set.of("required_with", "required_with_all", "required_without", "required_without_all", "excluded_with", "excluded_with_all", "excluded_without", "excluded_without_all");
+    public record Completion(String rule, String prefix, FieldType current, List<Step> traversal,
+                             Set<String> used, boolean fieldPosition) {}
+    /** A non-null context owns this parameter, even while entering a literal rather than a path. */
+    public static Completion completion(TagCompletion.Context context, FieldType declared, Set<String> custom) {
+        if (context.keyPosition() || !Set.of("validate", "binding").contains(context.key())) return null;
+        int equal = context.prefix().indexOf('=');
+        if (equal < 0) return null;
+        String name = context.prefix().substring(0, equal);
+        if (custom.contains(name) || !(COMPARE.contains(name) || PAIRS.contains(name) || PRESENCE.contains(name)
+                || Set.of("unique", "fieldcontains", "fieldexcludes", "postcode_iso3166_alpha2_field").contains(name))) return null;
+        String param = context.prefix().substring(equal + 1);
+        List<String> completed = new ArrayList<>();
+        StringBuilder word = new StringBuilder();
+        boolean quote = false, started = false, quoted = false;
+        for (int i = 0; i < param.length(); i++) {
+            char c = param.charAt(i);
+            if (c == '\'') { quote = !quote; quoted = true; started = true; }
+            else if (Character.isWhitespace(c) && !quote) {
+                if (started) { completed.add(word.toString()); word.setLength(0); started = false; quoted = false; }
+            } else { word.append(c); started = true; }
+        }
+        boolean fieldPosition = !quote && !quoted && (PAIRS.contains(name) ? completed.size() % 2 == 0
+            : PRESENCE.contains(name) || completed.isEmpty());
+        Set<String> used = new HashSet<>();
+        if (name.equals("required_if")) for (int i = 0; i < completed.size(); i += 2) used.add(completed.get(i));
+        FieldType current = ValidatorTypeRules.stateBefore(context, declared, custom).current();
+        List<Step> traversal = null;
+        if (name.equals("unique")) {
+            FieldType collection = current.dereference();
+            fieldPosition &= collection.collection() && collection.element() != null && collection.element().dereference().kind() == STRUCT;
+            traversal = new ArrayList<>();
+            Deque<List<Step>> mapValues = new ArrayDeque<>();
+            String before = context.valueBefore().substring(0, context.valueBefore().length() - context.prefix().length());
+            for (String and : TagValidator.split(before, ',')) for (String token : TagValidator.split(and, '|')) {
+                if (custom.contains(token)) continue;
+                if (token.equals("dive")) traversal.add(Step.VALUE);
+                if (token.equals("keys") && !traversal.isEmpty()) { mapValues.push(List.copyOf(traversal)); traversal.set(traversal.size() - 1, Step.KEY); }
+                if (token.equals("endkeys") && !mapValues.isEmpty()) traversal = new ArrayList<>(mapValues.pop());
+            }
+            traversal.add(Step.VALUE);
+            traversal = List.copyOf(traversal);
+        }
+        fieldPosition &= ValidatorTypeRules.problem(name, current) == null;
+        return new Completion(name, word.toString(), current, traversal, Set.copyOf(used), fieldPosition);
+    }
+    public static boolean supportsCompletion(Completion context, String path, FieldType target) {
+        if (!context.fieldPosition() || context.used().contains(path)) return false;
+        String name = context.rule();
+        if (COMPARE.contains(name) || Set.of("fieldcontains", "fieldexcludes", "postcode_iso3166_alpha2_field").contains(name))
+            return comparisonProblem(name, context.current(), target) == null;
+        if (name.equals("unique")) return !Set.of(MAP, SLICE, FUNCTION).contains(target.dereference().kind());
+        if (PAIRS.contains(name)) return literalProblem(target, "0") == null || literalProblem(target, "false") == null || literalProblem(target, "nil") == null;
+        return true;
+    }
     public static List<TagValidator.Finding> validate(String literal, FieldType declared, Lookup lookup, Set<String> custom) {
         List<TagValidator.Finding> out = new ArrayList<>();
         for (var entry : TagParser.parse(literal).entries()) {
@@ -46,7 +100,12 @@ public final class ValidatorReferences {
                         try { params = parameters(param); }
                         catch (IllegalArgumentException error) { add(out, entry, name + ": " + error.getMessage()); continue; }
                         if (PAIRS.contains(name) && params.size() % 2 != 0) {
-                            add(out, entry, name + " requires Field Value pairs"); continue;
+                            String path = params.get(params.size() - 1);
+                            Resolved target = reference(out, entry, name, path, lookup, null);
+                            String hint = target.status() == Status.FOUND && target.type().dereference().kind() == STRING
+                                ? "; use " + name + "=" + param.stripTrailing() + " '' to compare with an empty string (trailing whitespace is not a value)"
+                                : "; missing comparison value for '" + path + "'";
+                            add(out, entry, name + " requires Field Value pairs" + hint); continue;
                         }
                         Set<String> seen = new HashSet<>();
                         for (int i = 0; i < params.size(); i += PAIRS.contains(name) ? 2 : 1) {
@@ -75,7 +134,15 @@ public final class ValidatorReferences {
     }
     private static Resolved reference(List<TagValidator.Finding> out, TagParser.Entry entry, String rule, String path, Lookup lookup, List<Step> traversal) {
         Resolved result = lookup.resolve(path, traversal);
-        if (result.status() == Status.MISSING) add(out, entry, rule + " references missing or invalid Go field path '" + path + "'");
+        if (result.status() == Status.MISSING) {
+            String hint = "; references use case-sensitive Go field names, not JSON/form tag names";
+            if (!path.isEmpty() && Character.isLowerCase(path.charAt(0))) {
+                String candidate = Character.toUpperCase(path.charAt(0)) + path.substring(1);
+                if (lookup.resolve(candidate, traversal).status() == Status.FOUND)
+                    hint = "; use Go field path '" + candidate + "'" + hint;
+            }
+            add(out, entry, rule + " references missing or invalid Go field path '" + path + "'" + hint);
+        }
         if (result.status() == Status.AMBIGUOUS) add(out, entry, rule + " references ambiguous promoted field '" + path + "'");
         return result;
     }

@@ -18,6 +18,16 @@ public final class StructTagCompletionContributor extends CompletionContributor 
         GoFieldDeclaration field = PsiTreeUtil.getParentOfType(originalTag == null ? tag : originalTag, GoFieldDeclaration.class);
         if (field == null) return;
         StructTagEditorPolicy policy = StructTagEditorPolicy.forField(field);
+        var reference = ValidatorReferences.completion(context, policy.type(), policy.custom(context.key()));
+        if (reference != null) {
+            CompletionResultSet fields = result.withPrefixMatcher(reference.prefix());
+            for (var candidate : new GoFieldReferences(field).complete(reference)) {
+                fields.addElement(LookupElementBuilder.create(candidate.path())
+                    .withTypeText(candidate.navigation() ? "Go field path" : candidate.type().name(), true));
+            }
+            result.stopHere();
+            return;
+        }
         CompletionResultSet filtered = result.withPrefixMatcher(context.prefix());
         if (context.keyPosition()) {
             var existing = originalTag == null ? java.util.List.<TagParser.Entry>of() : TagParser.parse(originalTag.getText()).entries();
@@ -48,7 +58,7 @@ public final class StructTagCompletionContributor extends CompletionContributor 
         result.stopHere();
     }
     @Override public boolean invokeAutoPopup(com.intellij.psi.PsiElement position, char typed) {
-        return (typed == ',' || typed == ';' || typed == '"' || typed == '|' || typed == ' ')
+        return (typed == ',' || typed == ';' || typed == '"' || typed == '|' || typed == ' ' || typed == '=' || typed == '.')
                 && com.intellij.psi.util.PsiTreeUtil.getParentOfType(position, GoTag.class, false) != null;
     }
 }

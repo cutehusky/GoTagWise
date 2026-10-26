@@ -17,7 +17,7 @@ public final class ValidatorRuleDocumentation {
         if (name.endsWith("field") || Set.of("fieldcontains", "fieldexcludes", "postcode_iso3166_alpha2_field").contains(name))
             out.append("<p><b>Parameter:</b> a Go field name or path relative to the parent struct, for example <code>Other</code>, <code>Address.Code</code>, or <code>Items[0].Code</code>. Use Go names, not JSON/form aliases. Pointers are dereferenced; runtime nil values and missing collection entries still affect validation.</p>");
         if (name.endsWith("_if") || name.endsWith("_unless"))
-            out.append("<p><b>Parameters:</b> space-separated <code>Field Value</code> pairs. Quote values containing spaces with single quotes. Each literal is checked against its referenced field's datatype. Collections compare lengths (or <code>nil</code> for slices/maps); booleans use <code>true</code> or <code>false</code>.</p>");
+            out.append("<p><b>Parameters:</b> space-separated <code>Field Value</code> pairs. Quote values containing spaces with single quotes. For an empty string use two single quotes, for example <code>" + escape(name) + "=Name ''</code>; trailing whitespace alone is a missing value. Each literal is checked against its referenced field's datatype. Collections compare lengths (or <code>nil</code> for slices/maps); booleans use <code>true</code> or <code>false</code>.</p>");
         if (name.contains("_with") || name.contains("_without"))
             out.append("<p><b>Parameters:</b> space-separated Go field paths. Presence conditions do not require those fields to have the same datatype as the field being validated.</p>");
         if (Set.of("len", "min", "max", "gt", "gte", "lt", "lte", "eq", "ne").contains(name))

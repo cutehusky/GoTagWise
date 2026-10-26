@@ -11,6 +11,7 @@ A GoLand plugin for writing and checking Go struct tags. Get datatype-aware comp
 ## Features
 
 - Complete tag keys, options, and validation rules supported by the current field's datatype.
+- Complete Go field references in validator and Gin binding rules, with nested paths and datatype filtering.
 - Expand bundled `stjson`, `stbson`, `stenv`, `stvalidate`, `stgorm`, `stbun`, and other templates with **Tab**.
 - Hover over a tag or individual validator rule for documentation and examples.
 - Find malformed tags, duplicate keys, incompatible datatypes, missing referenced fields, and invalid conditional literals.
